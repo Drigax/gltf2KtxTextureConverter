@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program - (Help Dialog)",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\gltfKtxCompressor.js",
+            "args": ["-h"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program - (Use test glTF)",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\gltfKtxCompressor.js",
+            "args": [".\\Test\\test-out.gltf", "V:\\glTF\\glTF-Sample-Models\\2.0\\Avocado\\glTF\\Avocado.gltf"]
+        }
+    ]
+}
