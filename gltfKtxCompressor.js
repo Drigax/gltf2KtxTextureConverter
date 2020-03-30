@@ -50,7 +50,7 @@ function helpDialog() {
     --separateORM           Separates the ORM texture from packed RGB texture to multiple textures. O is stored\r\n\
                             in R channel of a separate texture, while R+M maps are stored as packed R+Alpha channels\r\n\
                             in the other texture\r\n\
-    --keepFallbackTexture   Retains the unconverted textures as a fallback for the output gltf scene. implies --extensionOptional. \r\n\
+    --useFallbackTexture    Retains the unconverted textures as a fallback for the output gltf scene. implies --extensionOptional. \r\n\
     --useKtx1               If not specified, the files will be converted to ktx2 format. if specified, the ktx1 format will be used\r\n\
     --verbose (or -v)       Enables verbose logging.\r\n\
     \r\n\
@@ -89,7 +89,8 @@ function convertReferencedImage(gltf, imageIndex, toKtxArgs) {
 function convertGLTFImagesToKTX(gltf, outputFilePath, toKtxArgs) {
     let addKtxExtensionFlag = false;
     if (gltf.images) {
-        for (let i = 0; i < gltf.images.length; ++i) {
+        let imagesOriginalLength = gltf.images.length;
+        for (let i = 0; i < imagesOriginalLength; ++i) {
             let image = gltf.images[i];
             console.log(`processing image ${i} - ${image.uri}`);
             let args = toKtxArgs;
@@ -99,6 +100,10 @@ function convertGLTFImagesToKTX(gltf, outputFilePath, toKtxArgs) {
                     textureIndex = convertReferencedImage(gltf, i, toKtxArgs.slice());
                     addKtxExtensionFlag = true;
                     updateReferencingTextures(gltf, i, textureIndex, gltfKtxCompressor_keepFallbackTextureImage);
+                    if (gltfKtxCompressor_keepFallbackTextureImage){
+                        fs.copyFileSync(path.resolve(gltfKtxCompressor_inputFilePath.substring(0, gltfKtxCompressor_inputFilePath.lastIndexOf(path.sep)), image.uri),
+                                        path.resolve(gltfKtxCompressor_outputFilePath.substring(0, gltfKtxCompressor_outputFilePath.lastIndexOf(path.sep)), image.uri));
+                    }
                 } else {
                     console.error(`Image type ${imageType} is not supported. (${supportedImageTypes}) Skipping image ${i}...`)
                     fs.copyFileSync(path.resolve(gltfKtxCompressor_inputFilePath.substring(0, gltfKtxCompressor_inputFilePath.lastIndexOf(path.sep)), image.uri),
@@ -179,7 +184,7 @@ function processCommandLineArgs(args) {
             gltfKtxCompressor_useKtx1 = true;
         } else if (arg === "--separateORM") {
             gltfKtxCompressor_separateORMTextures = true;
-        } else if (arg === "--keepFallbackTexture") {
+        } else if (arg === "--useFallbackTexture") {
             gltfKtxCompressor_keepFallbackTextureImage = true;
             gltfKtxCompressor_makeExtensionRequired = false;
         }else if (i == args.length - 2) {
@@ -220,7 +225,7 @@ if (process.argv.includes("-h") || process.argv.includes("--help")) {
             throw err;
         }
         var gltf = JSON.parse(data);
-        console.log(`Converting compatible textures in ${gltfKtxCompressor_inputFilePath} to KTX2...`)
+        console.log(`Converting compatible textures in ${gltfKtxCompressor_inputFilePath} to KTX${gltfKtxCompressor_useKtx1 ? "" : "2"}...`)
         convertGLTFImagesToKTX(gltf, gltfKtxCompressor_outputFilePath, toKtxArgs);
         var convertedGltf = JSON.stringify(gltf);
         fs.writeFile(gltfKtxCompressor_outputFilePath, convertedGltf, (err) => {

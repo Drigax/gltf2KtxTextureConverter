@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "type": "node",
             "request": "launch",
@@ -22,7 +23,17 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\gltfKtxCompressor.js",
-            "args": [".\\Test\\test-out.gltf", "V:\\glTF\\glTF-Sample-Models\\2.0\\Avocado\\glTF\\Avocado.gltf"]
+            "args": [".\\Test\\Avocado.gltf", "V:\\glTF\\glTF-Sample-Models\\2.0\\Avocado\\glTF\\Avocado.gltf"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program - (Use test glTF) - fallback texture",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\gltfKtxCompressor.js",
+            "args": ["--useFallbackTexture",".\\Test\\Avocado.gltf", "V:\\glTF\\glTF-Sample-Models\\2.0\\Avocado\\glTF\\Avocado.gltf"]
         }
     ]
 }
