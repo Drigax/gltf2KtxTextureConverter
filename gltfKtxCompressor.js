@@ -26,15 +26,18 @@ function OnExit(code) {
 }
 
 function runToKtx(args) {
+    // add default compression flags.
     if (!gltfKtxCompressor_useKtx1){
         args.unshift("--t2");
     }
+    args.unshift("--bcmp");
+
     console.log(`Executing toKtx with arguments: ${args}`);
     let command = 'toktx.exe';
     for (let i = 0; i < args.length; ++i) {
         command += " " + args[i];
     }
-    const output = execSync(command);
+    const output = execSync(command, {stdio: 'inherit'});
     console.log(output);
 }
 
@@ -228,6 +231,7 @@ if (process.argv.includes("-h") || process.argv.includes("--help")) {
         console.log(`Converting compatible textures in ${gltfKtxCompressor_inputFilePath} to KTX${gltfKtxCompressor_useKtx1 ? "" : "2"}...`)
         convertGLTFImagesToKTX(gltf, gltfKtxCompressor_outputFilePath, toKtxArgs);
         var convertedGltf = JSON.stringify(gltf);
+        console.log(`saving converted glTF to ${gltfKtxCompressor_outputFilePath}`);
         fs.writeFile(gltfKtxCompressor_outputFilePath, convertedGltf, (err) => {
             if (err) throw err;
             copyGltfBuffers(gltf, gltfKtxCompressor_inputFilePath, gltfKtxCompressor_outputFilePath);
